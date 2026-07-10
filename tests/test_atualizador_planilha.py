@@ -42,8 +42,8 @@ def test_atualizar_planilha_grava_aprovado_e_negado(tmp_path):
     assert float(maria["APR"]) == 8.0  # openpyxl grava "8", Excel/pandas relê como numero
 
     assert sandra["Status do Empréstimo"] == "Negado"
-    assert pd.isna(sandra["ID do Empréstimo"])
-    assert pd.isna(sandra["APR"])
+    assert sandra["ID do Empréstimo"] == "Negado"
+    assert sandra["APR"] == "Emprestimo acima do limite"
 
 
 def test_atualizar_planilha_ignora_email_sem_resultado(tmp_path):

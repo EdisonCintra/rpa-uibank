@@ -33,13 +33,16 @@ def test_capturar_resultado_negado(mock_pyautogui):
     wait.until.side_effect = TimeoutException()  # #loanID nao apareceu
 
     elemento_motivo = MagicMock()
-    elemento_motivo.text = "You must be at least 18 years old and the loan must not exceed 100k."
+    elemento_motivo.text = (
+        "You must be at least 18 years old for a loan and the loan must not exceed 100k."
+    )
     driver.find_element.return_value = elemento_motivo
 
     resultado = capturar_resultado(driver, wait, "sandra@teste.com")
 
     assert resultado["status"] == StatusResultado.NEGADO
-    assert "18 years old" in resultado["motivo"]
+    assert "18 anos" in resultado["motivo"]
+    assert "R$ 100.000" in resultado["motivo"]
 
 
 @patch("src.resultado.pyautogui")

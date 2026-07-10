@@ -27,9 +27,16 @@ def atualizar_planilha(caminho: str, resultados: dict) -> None:
         if resultado is None:
             continue
 
-        linha[col_status - 1].value = resultado["status"].value
-        if resultado["status"] == StatusResultado.APROVADO:
+        status = resultado["status"]
+        linha[col_status - 1].value = status.value
+
+        if status == StatusResultado.APROVADO:
             linha[col_id - 1].value = resultado["id"]
             linha[col_apr - 1].value = resultado["apr"]
+        else:
+            # sem ID/APR de verdade para negado/indefinido -- preenche com o
+            # status e o motivo em vez de deixar as celulas vazias
+            linha[col_id - 1].value = status.value
+            linha[col_apr - 1].value = resultado.get("motivo", "")
 
     workbook.save(caminho)

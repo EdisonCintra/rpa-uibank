@@ -17,11 +17,25 @@ except Exception:
 LARGURA_EMAIL = 25
 LARGURA_STATUS = 10
 
+# o UiBank devolve o motivo da recusa em ingles -- traduzimos as mensagens
+# conhecidas para exibir em portugues no console e na planilha. Mensagens
+# novas (nao mapeadas) aparecem no original em ingles em vez de sumir.
+TRADUCOES_MOTIVO = {
+    "You must be at least 18 years old for a loan and the loan must not exceed 100k.": (
+        "É necessário ter pelo menos 18 anos e o valor do empréstimo não "
+        "pode exceder R$ 100.000."
+    ),
+}
+
 
 class StatusResultado(str, Enum):
     APROVADO = "Aprovado"
     NEGADO = "Negado"
     INDEFINIDO = "Indefinido"
+
+
+def _traduzir_motivo(motivo: str) -> str:
+    return TRADUCOES_MOTIVO.get(motivo, motivo)
 
 
 def _registrar_evidencia(status: StatusResultado, email: str) -> None:
@@ -47,7 +61,7 @@ def capturar_resultado(driver, wait, email: str) -> dict:
         pass
 
     try:
-        motivo = driver.find_element(By.ID, "failMessage").text.strip()
+        motivo = _traduzir_motivo(driver.find_element(By.ID, "failMessage").text.strip())
         resultado = {"status": StatusResultado.NEGADO, "motivo": motivo}
         _registrar_evidencia(resultado["status"], email)
         return resultado
