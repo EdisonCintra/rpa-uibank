@@ -1,8 +1,6 @@
 import time
 
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 from src.config import DRIVE_FOLDER_URL, NOME_ARQUIVO_PLANILHA
 
@@ -14,10 +12,18 @@ def baixar_planilha(driver, wait: WebDriverWait) -> None:
 
     # o Drive gera classes CSS ofuscadas que mudam entre versões (ex.: "NYP1ee",
     # "i92Sbe") — o atributo data-tooltip com o nome do arquivo é o seletor
-    # estável disponível na UI atual
+    # estável disponível na UI atual. Lemos o data-id via execute_script dentro
+    # do wait para evitar StaleElementReferenceException: o Drive re-renderiza
+    # a lista enquanto carrega, então guardar o WebElement e ler o atributo
+    # depois pode cair em elemento obsoleto.
     seletor = f"[data-tooltip^='{NOME_ARQUIVO_PLANILHA}']"
-    arquivo = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, seletor)))
-    file_id = arquivo.get_attribute("data-id")
+    file_id = wait.until(
+        lambda d: d.execute_script(
+            "const el = document.querySelector(arguments[0]);"
+            "return el ? el.getAttribute('data-id') : null;",
+            seletor,
+        )
+    )
 
     # navega direto para a URL de export do Drive em vez de clicar em botão ou
     # usar atalho de teclado — a sessão já está autenticada, então isso baixa o

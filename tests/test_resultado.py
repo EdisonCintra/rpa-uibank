@@ -3,10 +3,12 @@ from unittest.mock import MagicMock, patch
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from src.resultado import capturar_resultado, exibir_resultado, StatusResultado
+from src.config import PASTA_SCREENSHOTS
 
 
+@patch("src.resultado.os.makedirs")
 @patch("src.resultado.pyautogui")
-def test_capturar_resultado_aprovado(mock_pyautogui):
+def test_capturar_resultado_aprovado(mock_pyautogui, mock_makedirs):
     driver = MagicMock()
     wait = MagicMock()
     wait.until.return_value = True  # elemento #loanID encontrado
@@ -24,10 +26,14 @@ def test_capturar_resultado_aprovado(mock_pyautogui):
     assert resultado["id"] == "6a4fcc090f79076a36ac35c6"
     assert resultado["apr"] == "8"
     mock_pyautogui.screenshot.assert_called_once()
+    # garante que a pasta e criada antes do screenshot -- sem isso o
+    # pyautogui.screenshot quebra com FileNotFoundError num clone limpo
+    mock_makedirs.assert_called_once_with(PASTA_SCREENSHOTS, exist_ok=True)
 
 
+@patch("src.resultado.os.makedirs")
 @patch("src.resultado.pyautogui")
-def test_capturar_resultado_negado(mock_pyautogui):
+def test_capturar_resultado_negado(mock_pyautogui, mock_makedirs):
     driver = MagicMock()
     wait = MagicMock()
     wait.until.side_effect = TimeoutException()  # #loanID nao apareceu
@@ -45,8 +51,9 @@ def test_capturar_resultado_negado(mock_pyautogui):
     assert "R$ 100.000" in resultado["motivo"]
 
 
+@patch("src.resultado.os.makedirs")
 @patch("src.resultado.pyautogui")
-def test_capturar_resultado_indefinido(mock_pyautogui):
+def test_capturar_resultado_indefinido(mock_pyautogui, mock_makedirs):
     driver = MagicMock()
     wait = MagicMock()
     wait.until.side_effect = TimeoutException()

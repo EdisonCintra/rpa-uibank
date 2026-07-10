@@ -21,12 +21,13 @@ Teste técnico para vaga de Programador RPA. Fluxo completo:
 
 ## Tecnologias
 
-- **Python 3.12**
+- **Python 3.12+** (testado em 3.12 e 3.13)
 - **Selenium** — navegação e leitura de elementos da página
 - **PyAutoGUI** — digitação em nível de sistema operacional
 - **pandas** / **openpyxl** — leitura e escrita da planilha `.xlsx`
 - **pytest** — testes unitários com mocks, sem depender de navegador
-- **uv** — ambiente virtual e gerenciamento de dependências
+- **uv** (opcional) — ambiente virtual e gerenciamento de dependências
+  (alternativa: `python -m venv` + `pip`)
 
 ## Estrutura
 
@@ -45,15 +46,36 @@ tests/                        # 16 testes, sem navegador nem internet
 
 ## Como rodar
 
-Requer o [uv](https://docs.astral.sh/uv/) instalado.
+### Pré-requisitos
+
+- **Python 3.12+** (obrigatório).
+- **Google Chrome** instalado — o Selenium Manager cuida do chromedriver
+  automaticamente, mas o navegador precisa existir na máquina.
+- **Tela gráfica real** (não headless) e teclado/mouse livres durante a
+  execução — o PyAutoGUI digita em nível de SO.
+- Acesso de rede à pasta pública do Google Drive e ao formulário do UiBank.
+
+### Instalação
 
 ```bash
 git clone https://github.com/EdisonCintra/rpa-uibank.git
 cd rpa-uibank
 
+# opção A — com uv (https://docs.astral.sh/uv/)
 uv venv
 uv pip install -r requirements.txt
 
+# opção B — com venv + pip (sem uv)
+python -m venv .venv
+# Windows
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+# Linux/Mac
+.venv/bin/python -m pip install -r requirements.txt
+```
+
+### Executar o fluxo
+
+```bash
 # Windows
 .venv\Scripts\python.exe -m src.main
 
@@ -74,7 +96,9 @@ atua em nível de sistema operacional.
 ## Rodando os testes
 
 ```bash
-uv pip install -r requirements.txt   # ja instala pytest e flake8 tambem
+# instalar dependências (uv OU pip)
+uv pip install -r requirements.txt
+# ou:  .venv\Scripts\python.exe -m pip install -r requirements.txt
 
 .venv\Scripts\python.exe -m pytest tests/ -v
 .venv\Scripts\python.exe -m flake8 src/ tests/ --max-line-length=100

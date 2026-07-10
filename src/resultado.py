@@ -1,3 +1,4 @@
+import os
 import time
 from enum import Enum
 
@@ -44,7 +45,10 @@ def _registrar_evidencia(status: StatusResultado, email: str) -> None:
     de quem é a evidência seria abrir a imagem uma por uma."""
     identificador = email.split("@")[0]
     nome_arquivo = f"{identificador}_{status.value.lower()}_{int(time.time())}.png"
-    pyautogui.screenshot(f"{PASTA_SCREENSHOTS}/{nome_arquivo}")
+    # pyautogui.screenshot nao cria o diretorio de destino -- garantimos aqui
+    # para nao quebrar num clone limpo, ja que a pasta esta no .gitignore
+    os.makedirs(PASTA_SCREENSHOTS, exist_ok=True)
+    pyautogui.screenshot(os.path.join(PASTA_SCREENSHOTS, nome_arquivo))
 
 
 def capturar_resultado(driver, wait, email: str) -> dict:
