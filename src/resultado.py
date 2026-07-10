@@ -4,9 +4,15 @@ from enum import Enum
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-import pyautogui
 
 from src.config import PASTA_SCREENSHOTS
+
+# pyautogui exige um display grafico real -- no CI (Linux sem display) a
+# importacao falha. Ver o mesmo padrao/motivo em formulario.py.
+try:
+    import pyautogui
+except Exception:
+    pyautogui = None
 
 LARGURA_EMAIL = 25
 LARGURA_STATUS = 10

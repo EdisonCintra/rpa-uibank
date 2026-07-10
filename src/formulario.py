@@ -4,10 +4,23 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
-import pyautogui
-import pygetwindow as gw
 
 from src.config import FORM_URL
+
+# pyautogui/pygetwindow dependem de um display grafico real (X11/Windows) --
+# no CI (Linux sem display) a importacao falha. Capturamos aqui em vez de
+# deixar quebrar a importacao do modulo inteiro: os testes usam @patch, que
+# so precisa do nome existir no modulo (nao importa se e None ou o pacote de
+# verdade), e a execucao real (main.py) so acontece no Windows do usuario.
+try:
+    import pyautogui
+except Exception:
+    pyautogui = None
+
+try:
+    import pygetwindow as gw
+except Exception:
+    gw = None
 
 TENTATIVAS_DIGITACAO = 5
 
