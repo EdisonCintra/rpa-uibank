@@ -16,8 +16,10 @@ PLANILHA_LOCAL = os.path.join(PASTA_DADOS, NOME_ARQUIVO_PLANILHA)
 def criar_opcoes_chrome() -> Options:
     """Configura o Chrome para baixar arquivos direto em PASTA_DADOS, sem
     diálogo de confirmação — mantém o download dentro do projeto em vez da
-    pasta padrão do usuário."""
+    pasta padrão do usuário. Também abre já maximizado: uma janela pequena
+    prejudica os screenshots de evidência e a troca de foco do PyAutoGUI."""
     opcoes = Options()
+    opcoes.add_argument("--start-maximized")
     pasta_absoluta = os.path.abspath(PASTA_DADOS)
     opcoes.add_experimental_option(
         "prefs",
